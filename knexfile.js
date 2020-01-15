@@ -13,10 +13,10 @@ module.exports = {
       conn.run('PRAGMA foreign_keys = ON', done);
     },
   },
-  migrations: {
-    directory: './migrations',
-  },
-  seeds: {
-    directory: './seeds',
-  },
+  // migrations: {
+  //   directory: './migrations',
+  // },
+  // seeds: {
+  //   directory: './seeds',
+  // },
 };
