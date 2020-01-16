@@ -39,4 +39,26 @@ router.post('/api/login', async (req, res, next) => {
   }
 });
 
+router.get('/api/users', async (req, res, next) => {
+  const authError = { message: 'invalid credentials!' };
+  const { username, password } = req.headers;
+  if (!username || !password) {
+    return res.status(401).json(authError);
+  }
+  const user = await dbUsers.findBy({ username }).first();
+  if (!username) {
+    return res.status(401).json(authError);
+  }
+  const passwordCheck = await bcrypt.compare(password, user.password);
+  if (!passwordCheck) {
+    return res.status(401).json(authError);
+  }
+  try {
+    const allUsers = await dbUsers.findAll();
+    res.json(allUsers);
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
