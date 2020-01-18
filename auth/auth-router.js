@@ -32,6 +32,8 @@ router.post('/api/login', async (req, res, next) => {
     const passwordValid = await bcrypt.compare(password, user.password);
 
     if (user && passwordValid) {
+      req.session.user = user;
+
       res.status(200).json({ message: `${username} Logged in` });
     } else {
       res.status(401).json({ message: 'You shall not Pass!' });
@@ -48,6 +50,16 @@ router.get('/api/users', restricted(), async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+});
+
+router.get('/api/logout', restricted(), (req, res, next) => {
+  req.session.destroy(err => {
+    if (err) {
+      next(err);
+    } else {
+      res.json({ message: 'You are logged out!' });
+    }
+  });
 });
 
 module.exports = router;
