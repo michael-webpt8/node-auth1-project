@@ -3,6 +3,8 @@ const router = express.Router();
 const dbUsers = require('../users/users-model');
 const bcrypt = require('bcryptjs');
 
+const restricted = require('../middleware/restricted');
+
 router.post('/api/register', async (req, res, next) => {
   if (!req.body.username) {
     return res.status(400).json({ message: 'username required' });
@@ -39,20 +41,7 @@ router.post('/api/login', async (req, res, next) => {
   }
 });
 
-router.get('/api/users', async (req, res, next) => {
-  const authError = { message: 'invalid credentials!' };
-  const { username, password } = req.headers;
-  if (!username || !password) {
-    return res.status(401).json(authError);
-  }
-  const user = await dbUsers.findBy({ username }).first();
-  if (!username) {
-    return res.status(401).json(authError);
-  }
-  const passwordCheck = await bcrypt.compare(password, user.password);
-  if (!passwordCheck) {
-    return res.status(401).json(authError);
-  }
+router.get('/api/users', restricted(), async (req, res, next) => {
   try {
     const allUsers = await dbUsers.findAll();
     res.json(allUsers);
